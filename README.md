@@ -4,6 +4,7 @@ A deep learning–based 3D CT image denoising framework using a lightweight 3D U
 
 The pipeline covers data preprocessing, patch-based training, inference, visualization, and evaluation using standard image quality metrics.
 
+---
 
 🔍 Project Overview
 
@@ -21,6 +22,7 @@ Key highlights:
 
 * Qualitative slice-wise visualization
 
+---
 
 
 🧠 Model Architecture
@@ -36,6 +38,7 @@ The architecture consists of:
 * Bottleneck layer
 * Decoder with transpose convolutions and skip connections
 
+---
 
 ⚙️ Setup Instructions
 
@@ -59,6 +62,7 @@ data/raw/test_ct.nii.gz
 
 During training, the dataset is split into 3D patches to reduce memory usage.
 
+---
 
 
 🚀 Training
@@ -73,6 +77,7 @@ Epoch [1/5] - Loss: 42.13
 Epoch [5/5] - Loss: 9.01
 Model saved as unet3d_denoising.pth
 
+---
 
 🔎 Inference (Denoising)
 
@@ -86,6 +91,7 @@ Denoised CT saved as:
 
 data/raw/denoised_ct.nii.gz
 
+---
 
 📊 Evaluation Metrics
 
@@ -101,6 +107,7 @@ SSIM : 0.0003
 
 Note: These results are expected for a demo-scale dataset. Performance improves significantly with larger datasets and longer training.
 
+---
 
 🖼️ Visualization
 
@@ -110,6 +117,7 @@ Note: These results are expected for a demo-scale dataset. Performance improves 
 Example:
 comparison_slice.png
 
+---
 
 🧩 Key Challenges Addressed
 
@@ -117,6 +125,7 @@ comparison_slice.png
 * Medical imaging file formats
 * Stable training of 3D CNNs on limited hardware
 
+---
 
 🔮 Future Improvements
 
@@ -127,6 +136,7 @@ comparison_slice.png
 * Multi-GPU training
 * Quantitative evaluation against ground truth clean CT
 
+---
 
 👩‍💻 Author
 
@@ -134,6 +144,7 @@ Bindu S Reddy
 M.Tech – Artificial Intelligence & Data Science
 Focused on Medical Imaging, Deep Learning, and Applied AI
 
+---
 
 📜 License
 
