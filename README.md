@@ -1,153 +1,130 @@
-CT-Denoising-3D
+# CT-Denoising-3D
 
-A deep learning–based 3D CT image denoising framework using a lightweight 3D U-Net architecture. This project focuses on reducing noise in volumetric CT scans stored in NIfTI (.nii.gz) format while preserving anatomical structures.
+**3D U-Net for Low-Dose CT Volume Denoising**
 
-The pipeline covers data preprocessing, patch-based training, inference, visualization, and evaluation using standard image quality metrics.
-
----
-
-🔍 Project Overview
-
-Medical CT scans often suffer from noise due to low-dose imaging protocols. This project addresses that problem by training a 3D U-Net model to learn a mapping from noisy CT volumes to clean (denoised) volumes.
-
-Key highlights:
-
-* Full end-to-end 3D pipeline
-
-* Patch-based training to handle memory constraints
-
-* Supports NIfTI (.nii.gz) medical imaging format
-
-* Quantitative evaluation using PSNR and SSIM
-
-* Qualitative slice-wise visualization
+Low-dose CT protocols reduce patient radiation exposure but introduce noise that degrades diagnostic quality. This project trains a lightweight 3D U-Net to map noisy NIfTI volumes to denoised outputs, preserving anatomical structures without manual filtering heuristics.
 
 ---
 
+## Architecture
 
-🧠 Model Architecture
+Encoder–bottleneck–decoder structure built on 3D convolutions, batch normalization, transpose convolutions, and skip connections. Single-channel input and output (volumetric CT, one modality).
 
-* Model: 3D U-Net
-* Input: Noisy CT volume (1 channel)
-* Output: Denoised CT volume (1 channel)
-* Loss Function: Mean Squared Error (MSE)
-* Optimizer: Adam
+| Component | Detail |
+|---|---|
+| Model | 3D U-Net |
+| Input | Noisy CT volume — 1 channel |
+| Output | Denoised CT volume — 1 channel |
+| Loss | Mean Squared Error (MSE) |
+| Optimizer | Adam |
 
-The architecture consists of:
-* Encoder with 3D convolutions + batch normalization
-* Bottleneck layer
-* Decoder with transpose convolutions and skip connections
+The encoder downsamples with 3D conv blocks; the decoder reconstructs spatial resolution via transpose convolutions. Skip connections carry encoder feature maps directly to the corresponding decoder stage to retain fine structural detail.
 
 ---
 
-⚙️ Setup Instructions
+## Design Decisions
 
-1️⃣ Create Conda Environment
+**Patch-based training** was chosen over spatial downsampling. Reducing volume resolution would discard the fine anatomical detail the model is trained to recover — patching preserves resolution while fitting GPU memory constraints on single-GPU hardware.
 
+**NIfTI-native pipeline** — volumes are read, processed, and written back in `.nii.gz` format throughout, avoiding lossy intermediate conversions.
+
+---
+
+## Setup
+
+```bash
 conda create -n ct3d python=3.9
 conda activate ct3d
-
-2️⃣ Install Dependencies
-
 pip install torch torchvision nibabel numpy matplotlib scikit-image tqdm
+```
 
-🧪 Dataset Preparation
+---
 
-* Place CT volumes in data/raw/
-* Supported format: .nii.gz
-* Example:
+## Dataset
 
+Place CT volumes in `data/raw/` in `.nii.gz` format:
+
+```
 data/raw/sample_ct.nii.gz
 data/raw/test_ct.nii.gz
+```
 
-During training, the dataset is split into 3D patches to reduce memory usage.
+During training, volumes are split into 3D patches automatically.
 
 ---
 
+## Training
 
-🚀 Training
-
-Run the training script from the project root:
-
+```bash
 python training/train_unet3d.py
+```
 
-Training output example:
+Training log example:
 
+```
 Epoch [1/5] - Loss: 42.13
 Epoch [5/5] - Loss: 9.01
-Model saved as unet3d_denoising.pth
+Model saved: unet3d_denoising.pth
+```
 
 ---
 
-🔎 Inference (Denoising)
+## Inference
 
-Run inference on a test CT volume:
-
+```bash
 python inference/run_denoising.py
+```
 
-Output:
-
-Denoised CT saved as:
-
-data/raw/denoised_ct.nii.gz
+Output written to `data/raw/denoised_ct.nii.gz`.
 
 ---
 
-📊 Evaluation Metrics
+## Evaluation
 
-The model performance is evaluated using:
+Performance is measured using PSNR and SSIM against the noisy input baseline.
 
-* PSNR (Peak Signal-to-Noise Ratio)
-* SSIM (Structural Similarity Index)
-
-Example results:
-
+```
 PSNR : 0.03 dB
 SSIM : 0.0003
+```
 
-Note: These results are expected for a demo-scale dataset. Performance improves significantly with larger datasets and longer training.
+> These numbers reflect a demo-scale dataset. The evaluation framework is in place; metrics improve with multi-patient training data and extended epochs.
 
----
-
-🖼️ Visualization
-
-* Slice-wise comparison between noisy and denoised CT
-* Output saved in results/
-
-Example:
-comparison_slice.png
+Slice-wise visual comparisons (noisy vs. denoised) are saved to `results/comparison_slice.png`.
 
 ---
 
-🧩 Key Challenges Addressed
+## Limitations
 
-* 3D memory constraints (handled via patching)
-* Medical imaging file formats
-* Stable training of 3D CNNs on limited hardware
+Current metrics reflect a single-sample demo run, not a clinical benchmark. The model has not been evaluated against ground-truth clean CT volumes — a requirement for any downstream diagnostic use. DICOM input is not yet supported; volumes must be converted to NIfTI before ingestion.
 
 ---
 
-🔮 Future Improvements
+## Project Structure
 
-* Train on larger multi-patient datasets
-* Add residual learning
-* Incorporate perceptual or adversarial loss
-* Support DICOM input
-* Multi-GPU training
-* Quantitative evaluation against ground truth clean CT
-
----
-
-👩‍💻 Author
-
-Bindu S Reddy
-M.Tech – Artificial Intelligence & Data Science
-Focused on Medical Imaging, Deep Learning, and Applied AI
+```
+CT-Denoising-3D/
+├── data/
+│   └── raw/                  # Input and output CT volumes
+├── training/
+│   └── train_unet3d.py       # Training script
+├── inference/
+│   └── run_denoising.py      # Inference script
+├── results/                  # Slice-wise visualizations
+├── requirements.txt
+└── README.md
+```
 
 ---
 
-📜 License
+## Author
 
-This project is intended for academic and research purposes.
+**Bindu S Reddy**
+M.Tech — Artificial Intelligence & Data Science
+Research interests: Medical imaging, deep learning, applied AI
 
-⭐ If you find this project useful, consider starring the repository!
+---
+
+## License
+
+Academic and research use only.
